@@ -409,14 +409,58 @@ h1, h2, h3, h4, .logo, .btn {
     opacity: 1;
 }
 
-/* ===== РИСОВАННАЯ ПОЛКА ===== */
+/* ===== РИСОВАННАЯ ПОЛКА (улучшенная текстура) ===== */
 .shelf-container {
-    background: #e8e0d6;  /* имитация дерева, но не коричневый */
+    background: #e8e0d6;  /* база — тёплый серо-бежевый */
     padding: 40px 30px 50px;
     border-radius: 30px 30px 15px 15px;
-    box-shadow: inset 0 -10px 0 rgba(0,0,0,0.05), 0 15px 30px rgba(0,0,0,0.05);
+    box-shadow: 
+        inset 0 -12px 0 rgba(0,0,0,0.04),
+        inset 0 2px 0 rgba(255,255,255,0.5),
+        0 15px 30px rgba(0,0,0,0.05);
     position: relative;
     margin-top: 20px;
+    background-image: 
+        repeating-linear-gradient(
+            90deg,
+            rgba(0,0,0,0.02) 0px,
+            rgba(0,0,0,0.02) 2px,
+            transparent 2px,
+            transparent 8px
+        ),
+        linear-gradient(145deg, #e8e0d6 0%, #dbd2c8 100%);
+}
+
+/* Эффект «дощечек» — вертикальные линии */
+.shelf-container::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    bottom: 15px;
+    left: 20px;
+    right: 20px;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(0,0,0,0.02) 0px,
+        rgba(0,0,0,0.02) 1px,
+        transparent 1px,
+        transparent 20px
+    );
+    pointer-events: none;
+    border-radius: 10px;
+}
+
+/* Верхняя планка (имитация края полки) */
+.shelf-container::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 5%;
+    width: 90%;
+    height: 10px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 20px;
+    filter: blur(2px);
 }
 
 .shelf-container::before {
@@ -439,11 +483,12 @@ h1, h2, h3, h4, .logo, .btn {
 }
 
 .shelf-book {
+    position: relative;
     background: linear-gradient(145deg, #f3ede7, #e5ddd5);
-    width: 160px;
-    min-height: 220px;
+    width: 200px;           /* было 160px — стало просторнее */
+    min-height: 210px;      /* чуть уменьшили высоту */
     border-radius: 8px 8px 0 0;
-    padding: 20px 12px;
+    padding: 18px 16px;     /* боковые отступы увеличены */
     box-shadow: -5px 0 0 rgba(0,0,0,0.02), 8px 8px 20px rgba(0,0,0,0.04);
     display: flex;
     flex-direction: column;
@@ -459,38 +504,40 @@ h1, h2, h3, h4, .logo, .btn {
 
 .shelf-book-title {
     font-weight: 700;
-    font-size: 1.2rem;
-    margin-bottom: 8px;
+    font-size: 1.1rem;      /* чуть меньше, чтобы длинные названия не ломались */
+    margin-bottom: 6px;
     color: var(--accent);
     word-break: break-word;
     font-family: var(--font-serif);
+    line-height: 1.3;
 }
 
 .shelf-book-author {
-    font-size: 0.9rem;
+    font-size: 0.85rem;     /* немного уменьшили */
     color: var(--text-light);
     font-style: italic;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .shelf-book-snippet {
     font-size: 0.8rem;
     color: #5f5b58;
     background: rgba(255,255,255,0.5);
-    padding: 8px;
+    padding: 8px 10px;      /* горизонтальные отступы шире */
     border-radius: 4px;
     border-left: 2px solid var(--gold);
     margin-top: auto;
 }
 
-.empty-shelf {
-    text-align: center;
-    color: var(--text-light);
-    font-style: italic;
-    padding: 60px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 12px;
-    width: 100%;
+/* Блок отзыва — подгоняем под новую ширину */
+.shelf-review {
+    margin-top: 12px;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(2px);
+    border-radius: 8px;
+    padding: 10px 12px;     /* чуть шире */
+    border-left: 3px solid var(--gold);
+    font-size: 0.8rem;
 }
 
 /* ===== ФОРМА ДОБАВЛЕНИЯ ===== */
@@ -684,4 +731,129 @@ h1, h2, h3, h4, .logo, .btn {
     .burger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
     .footer__inner { flex-direction: column; gap: 20px; }
     .section-title { font-size: 2.2rem; }
+}
+/* ===== ДОПОЛНЕНИЯ ДЛЯ МОЕЙ ПОЛКИ (УДАЛЕНИЕ + ОТЗЫВЫ) ===== */
+
+/* Кнопка удаления с полки */
+.shelf-remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: transparent;
+    border: none;
+    color: rgba(80, 70, 60, 0.4);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.1s;
+    padding: 0;
+    line-height: 1;
+    z-index: 5;
+}
+
+.shelf-remove-btn:hover {
+    color: #b38b4a;  /* светлый коричневый */
+    transform: scale(1.1);
+}
+
+/* Блок отзыва на полке */
+.shelf-review {
+    margin-top: 15px;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(2px);
+    border-radius: 8px;
+    padding: 10px;
+    border-left: 3px solid var(--gold);
+    font-size: 0.85rem;
+}
+
+
+
+.review-text {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    background: white;
+    resize: vertical;
+    margin-bottom: 8px;
+}
+
+.save-review-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: var(--font-serif);
+}
+
+.save-review-btn:hover {
+    background: var(--accent-light);
+}
+/* ===== СВОРАЧИВАНИЕ ОТЗЫВА НА ПОЛКЕ ===== */
+.review-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0 4px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.review-toggle .review-header {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.toggle-review-btn {
+    background: transparent;
+    border: none;
+    color: rgba(80, 70, 60, 0.5);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s;
+}
+
+.toggle-review-btn:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--gold);
+}
+
+/* Обёртка отзыва — по умолчанию скрыта */
+.review-wrapper {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.2s;
+    margin-top: 0;
+}
+
+.review-wrapper.expanded {
+    max-height: 300px;
+    opacity: 1;
+    margin-top: 8px;
+}
+
+/* Корректировка отступа в самом отзыве */
+.shelf-review {
+    margin-top: 0;
 }

@@ -273,25 +273,98 @@ function initQuoteModal() {
     });
 }
 
-// ========== РИСОВАННАЯ ПОЛКА (favorites.html) ==========
+// ========== РИСОВАННАЯ ПОЛКА (с удалением, отзывом и сворачиванием) ==========
 function renderShelf() {
     const container = document.getElementById('shelfContainer');
     if (!container) return;
+    
     const favoriteBooks = books.filter(b => b.isFavorite);
+    
     let html = `<div class="shelf-container"><div class="books-shelf">`;
+    
     if (favoriteBooks.length === 0) {
         html += `<div class="empty-shelf">✨ На полке пока пусто. Добавьте книги через иконку стопки книг в библиотеке.</div>`;
     } else {
         favoriteBooks.forEach(book => {
-            html += `<div class="shelf-book" title="${book.title}">
-                        <div class="shelf-book-title">${book.title}</div>
-                        <div class="shelf-book-author">${book.author}</div>
-                        <div class="shelf-book-snippet">«${book.firstLine.substring(0, 40)}…»</div>
-                    </div>`;
+            const hasReview = book.review && book.review.trim() !== '';
+            const expandedClass = hasReview ? 'expanded' : '';
+            const reviewText = book.review || '';
+            
+            html += `
+                <div class="shelf-book" data-book-id="${book.id}">
+                    <button class="shelf-remove-btn" title="Убрать с полки">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                    <div class="shelf-book-title">${book.title}</div>
+                    <div class="shelf-book-author">${book.author}</div>
+                    <div class="shelf-book-snippet">«${book.firstLine.substring(0, 40)}…»</div>
+                    <div class="review-toggle">
+                        <span class="review-header">
+                            <i class="fas fa-pencil-alt"></i> Моё мнение
+                        </span>
+                        <button class="toggle-review-btn" title="Развернуть/свернуть">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="review-wrapper ${expandedClass}">
+                        <div class="shelf-review">
+                            <textarea class="review-text" placeholder="Напишите отзыв..." rows="2">${reviewText}</textarea>
+                            <button class="save-review-btn">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            `;
         });
     }
+    
     html += `</div></div>`;
     container.innerHTML = html;
+    
+    // Удаление с полки
+    document.querySelectorAll('.shelf-remove-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const bookId = this.closest('.shelf-book').dataset.bookId;
+            const book = books.find(b => b.id === bookId);
+            if (book) {
+                book.isFavorite = false;
+                saveBooks();
+                renderShelf();
+            }
+        });
+    });
+    
+    // Сохранение отзыва
+    document.querySelectorAll('.save-review-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const shelfBook = this.closest('.shelf-book');
+            const bookId = shelfBook.dataset.bookId;
+            const reviewText = shelfBook.querySelector('.review-text').value.trim();
+            const book = books.find(b => b.id === bookId);
+            if (book) {
+                book.review = reviewText;
+                saveBooks();
+                this.textContent = 'Сохранено!';
+                setTimeout(() => { this.textContent = 'Сохранить'; }, 1500);
+            }
+        });
+    });
+    
+    // Сворачивание/разворачивание
+    document.querySelectorAll('.toggle-review-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const shelfBook = this.closest('.shelf-book');
+            const wrapper = shelfBook.querySelector('.review-wrapper');
+            wrapper.classList.toggle('expanded');
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            }
+        });
+    });
 }
 
 // ========== ДОБАВЛЕНИЕ КНИГИ (add.html) ==========
