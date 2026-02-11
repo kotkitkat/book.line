@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя полка — Спойлеры</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%231e2a47' d='M20 25v50l30-15 30 15V25L50 10 20 25z'/%3E%3Cpath fill='%23b68b40' d='M20 75l30-15 30 15-30 15-30-15z'/%3E%3C/svg%3E">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-book-open"></i> Спойлеры<span>.</span>
+                </a>
+                <nav class="nav" id="nav">
+                    <ul class="nav__list">
+                        <li><a href="index.html" class="nav__link">Библиотека</a></li>
+                        <li><a href="favorites.html" class="nav__link active">Моя полка</a></li>
+                        <li><a href="add.html" class="nav__link">Добавить книгу</a></li>
+                    </ul>
+                </nav>
+                <button class="burger" id="burger" aria-label="Меню">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="favorites">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Моя полка</h2>
+                    <p class="section-subtitle">Книги, которые вы отложили</p>
+                </div>
+                <div id="shelfContainer" class="shelf-container"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__inner">
+                <p class="footer__copy">© 2025 Спойлеры. Первые и последние строки.</p>
+                <div class="footer__social">
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initBurger();
+            loadBooks();
+            renderShelf();
+        });
+    </script>
+</body>
+</html>
