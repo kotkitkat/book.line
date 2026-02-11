@@ -857,3 +857,109 @@ h1, h2, h3, h4, .logo, .btn {
 .shelf-review {
     margin-top: 0;
 }
+/* ===== ЛОАДЕР: ДЫМЯЩАЯСЯ ЧАШКА ЧАЯ ===== */
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(253, 250, 247, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.25s ease, visibility 0.25s;
+}
+
+#loader.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tea-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.cup {
+    position: relative;
+    font-size: 4rem;
+    color: var(--gold);
+    animation: wobble 2s infinite ease-in-out;
+}
+
+.steam {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+
+.steam span {
+    display: block;
+    width: 8px;
+    height: 20px;
+    background: rgba(182, 139, 64, 0.3);
+    border-radius: 10px;
+    animation: steam 1.5s infinite;
+}
+
+.steam span:nth-child(1) {
+    animation-delay: 0.2s;
+    height: 25px;
+}
+
+.steam span:nth-child(2) {
+    animation-delay: 0.6s;
+    height: 30px;
+}
+
+.steam span:nth-child(3) {
+    animation-delay: 0.4s;
+    height: 22px;
+}
+
+.loader-text {
+    font-family: var(--font-serif);
+    color: var(--accent);
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+@keyframes steam {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scaleX(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-15px) scaleX(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-30px) scaleX(0.8);
+    }
+}
+
+@keyframes wobble {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .cup { font-size: 3rem; }
+    .steam span { width: 6px; height: 16px; }
+}

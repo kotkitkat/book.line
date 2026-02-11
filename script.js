@@ -1,6 +1,16 @@
 // ========== ХРАНИЛИЩЕ ==========
 let books = [];
 const STORAGE_KEY = 'spoiler_books';
+// ========== УПРАВЛЕНИЕ ЛОАДЕРОМ ==========
+function showLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.add('active');
+}
+
+function hideLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.remove('active');
+}
 
 function loadBooks() {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -398,20 +408,44 @@ function initAddBookForm() {
 
         books.push(newBook);
         saveBooks();
-        window.location.href = 'index.html';
+        sshowLoader();
+setTimeout(() => {
+    window.location.href = 'index.html';
+}, 80);
     });
 }
 
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
 document.addEventListener('DOMContentLoaded', function() {
     // Эти функции должны быть доступны глобально
+    showLoader();
     window.loadBooks = loadBooks;
     window.renderBooks = renderBooks;
     window.renderShelf = renderShelf;
     window.initAddBookForm = initAddBookForm;
     window.initBurger = initBurger;
+    setTimeout(hideLoader, 100);
 
+  
     // Инициализируем модалки, если они есть на странице
     if (document.getElementById('editModal')) initEditModal();
     if (document.getElementById('quoteModal')) initQuoteModal();
+
+    function initNavLoader() {
+    const navLinks = document.querySelectorAll('.nav__link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (this.classList.contains('active')) return;
+            e.preventDefault(); // отменяем мгновенный переход
+            showLoader();
+            const href = this.href;
+            setTimeout(() => {
+                window.location.href = href;
+            }, 80); // задержка 80 мс — чашка успевает задымить
+        });
+    });
+}
+
+    window.addEventListener('pageshow', hideLoader);
+    initNavLoader();
 });
