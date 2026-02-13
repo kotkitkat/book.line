@@ -1017,6 +1017,31 @@ if (loadYandexBtn) {
 }
 });
 
+document.getElementById('importFromFileBtn').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const importedBooks = JSON.parse(event.target.result);
+                books = importedBooks;
+                saveBooks();
+                alert('✅ Данные успешно загружены из файла!');
+                if (document.getElementById('booksContainer')) renderBooks();
+                if (document.getElementById('shelfContainer')) renderShelf();
+                if (document.getElementById('authorFilter')) updateAuthorFilterOptions();
+            } catch (error) {
+                alert('❌ Ошибка при чтении файла. Убедитесь, что это правильный JSON.');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+});
+
 // Скрываем лоадер при возврате по истории
 window.addEventListener('pageshow', hideLoader);
 
@@ -1108,7 +1133,7 @@ async function saveToYandexDisk() {
     }
 }
 
-// Загрузка файла с Яндекс Диска (с использованием CORS-прокси)
+// Загрузка файла с Яндекс Диска (с несколькими CORS-прокси и fallback)
 async function loadFromYandexDisk() {
     showLoader();
 
@@ -1119,7 +1144,7 @@ async function loadFromYandexDisk() {
             if (token) localStorage.setItem('yandex_token', token);
         }
 
-        // Получаем ссылку для скачивания
+        // Получаем ссылку для скачивания с Яндекс.Диска
         const downloadUrlResponse = await fetch(
             `https://cloud-api.yandex.net/v1/disk/resources/download?path=${encodeURIComponent(YANDEX_APP_FOLDER + YANDEX_BACKUP_FILE)}`,
             { headers: { 'Authorization': `OAuth ${token}` } }
@@ -1132,23 +1157,67 @@ async function loadFromYandexDisk() {
         }
 
         const downloadData = await downloadUrlResponse.json();
-        const downloadHref = downloadData.href; // Это ссылка на скачивание с диска
+        const downloadHref = downloadData.href; // Прямая ссылка на скачивание
 
-        // Используем CORS-прокси для скачивания
-        const proxyUrl = 'https://api.allorigins.win/raw?url=';
-        const proxyResponse = await fetch(proxyUrl + encodeURIComponent(downloadHref));
+        // Расширенный список CORS-прокси
+        const proxies = [
+            'https://api.codetabs.com/v1/proxy?quest=',
+            'https://corsproxy.io/?',
+            'https://api.allorigins.win/raw?url=',
+            'https://thingproxy.freeboard.io/fetch/',
+            'https://cors-anywhere.herokuapp.com/',
+            'https://cors.bridged.cc/',
+            'https://cors.eu.org/'
+        ];
 
-        if (!proxyResponse.ok) {
-            throw new Error(`Прокси вернул ошибку ${proxyResponse.status}`);
+        let fileContent = null;
+        let lastError = null;
+
+        for (const proxy of proxies) {
+            try {
+                console.log(`Пробуем прокси: ${proxy}`);
+                const proxyResponse = await fetch(proxy + encodeURIComponent(downloadHref));
+                if (proxyResponse.ok) {
+                    fileContent = await proxyResponse.json();
+                    console.log(`✅ Прокси ${proxy} сработал!`);
+                    break;
+                } else {
+                    throw new Error(`HTTP ${proxyResponse.status}`);
+                }
+            } catch (err) {
+                console.warn(`❌ Прокси ${proxy} не сработал:`, err.message);
+                lastError = err;
+                continue;
+            }
         }
 
-        const fileContent = await proxyResponse.json(); // Ожидаем JSON
+        if (fileContent === null) {
+            // Все прокси не сработали – предлагаем ручной импорт
+            hideLoader();
+            const userChoice = confirm(
+                'Не удалось автоматически загрузить данные с Яндекс.Диска.\n\n' +
+                'Хотите скачать файл вручную и затем загрузить его?\n' +
+                '(Выберите OK, чтобы скачать файл, затем используйте кнопку "Загрузить из файла")'
+            );
+            if (userChoice) {
+                // Скачиваем файл через создание временной ссылки (прямое скачивание без CORS)
+                const link = document.createElement('a');
+                link.href = downloadHref;
+                link.download = YANDEX_BACKUP_FILE;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            return;
+        }
 
+        // Заменяем текущую библиотеку
         books = fileContent;
         saveBooks();
 
         alert('✅ Данные успешно загружены с Яндекс Диска!');
 
+        // Обновляем интерфейс
         if (document.getElementById('booksContainer')) renderBooks();
         if (document.getElementById('shelfContainer')) renderShelf();
         if (document.getElementById('authorFilter')) updateAuthorFilterOptions();
