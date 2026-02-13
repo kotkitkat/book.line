@@ -1108,7 +1108,7 @@ async function saveToYandexDisk() {
     }
 }
 
-// Загрузка файла с Яндекс Диска
+// Загрузка файла с Яндекс Диска (с использованием CORS-прокси)
 async function loadFromYandexDisk() {
     showLoader();
 
@@ -1119,6 +1119,7 @@ async function loadFromYandexDisk() {
             if (token) localStorage.setItem('yandex_token', token);
         }
 
+        // Получаем ссылку для скачивания
         const downloadUrlResponse = await fetch(
             `https://cloud-api.yandex.net/v1/disk/resources/download?path=${encodeURIComponent(YANDEX_APP_FOLDER + YANDEX_BACKUP_FILE)}`,
             { headers: { 'Authorization': `OAuth ${token}` } }
@@ -1131,10 +1132,17 @@ async function loadFromYandexDisk() {
         }
 
         const downloadData = await downloadUrlResponse.json();
-        const downloadHref = downloadData.href;
+        const downloadHref = downloadData.href; // Это ссылка на скачивание с диска
 
-        const fileResponse = await fetch(downloadHref);
-        const fileContent = await fileResponse.json();
+        // Используем CORS-прокси для скачивания
+        const proxyUrl = 'https://api.allorigins.win/raw?url=';
+        const proxyResponse = await fetch(proxyUrl + encodeURIComponent(downloadHref));
+
+        if (!proxyResponse.ok) {
+            throw new Error(`Прокси вернул ошибку ${proxyResponse.status}`);
+        }
+
+        const fileContent = await proxyResponse.json(); // Ожидаем JSON
 
         books = fileContent;
         saveBooks();
