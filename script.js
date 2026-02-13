@@ -347,7 +347,6 @@ function createBookCard(book) {
     } else {
         quotesHtml = `
             <div class="book-card__quotes">
-                <div class="quotes-list"></div>
                 <div class="quotes-actions">
                     <button class="btn-icon add-quote-btn" data-book-id="${book.id}" title="Добавить цитату">
                         <i class="fas fa-plus"></i> Добавить цитату
@@ -1005,7 +1004,153 @@ document.addEventListener('DOMContentLoaded', function() {
     initNavLoader();
     
     setTimeout(hideLoader, 100);
+
+    // Инициализация кнопок Яндекс Диска
+const saveYandexBtn = document.getElementById('saveToYandexBtn');
+const loadYandexBtn = document.getElementById('loadFromYandexBtn');
+
+if (saveYandexBtn) {
+    saveYandexBtn.addEventListener('click', saveToYandexDisk);
+}
+if (loadYandexBtn) {
+    loadYandexBtn.addEventListener('click', loadFromYandexDisk);
+}
 });
 
 // Скрываем лоадер при возврате по истории
 window.addEventListener('pageshow', hideLoader);
+
+// ========== ИНТЕГРАЦИЯ С ЯНДЕКС ДИСКОМ ==========
+
+// Конфигурация приложения (вставьте ваш ClientID)
+const YANDEX_CLIENT_ID = 'b70d7d5e83b54b619990ef527def50e8';
+
+// Название папки и файла для бекапа
+const YANDEX_APP_FOLDER = 'app:/spoilery_backup/';
+const YANDEX_BACKUP_FILE = 'my_books.json';
+
+// Функция для получения токена (авторизации) пользователя
+async function getYandexToken() {
+    return new Promise((resolve, reject) => {
+        // Правильный redirect_uri — полный адрес вашей страницы-обработчика
+        const redirectUri = encodeURIComponent('https://kotkitkat.github.io/book.line/yandex-callback.html');
+        const authUrl = `https://oauth.yandex.ru/authorize?response_type=token&client_id=${YANDEX_CLIENT_ID}&redirect_uri=${redirectUri}`;
+        
+        const authWindow = window.open(authUrl, 'authWindow', 'width=600,height=600');
+
+        // Обработчик сообщения от дочернего окна
+        function handleMessage(event) {
+            // Проверяем, что сообщение пришло от вашего домена (или '*' для надёжности)
+            if (event.origin === 'https://kotkitkat.github.io' || event.origin === window.location.origin) {
+                if (event.data && event.data.type === 'yandex-token') {
+                    window.removeEventListener('message', handleMessage);
+                    authWindow.close();
+                    resolve(event.data.token);
+                }
+            }
+        }
+
+        window.addEventListener('message', handleMessage);
+
+        // Если окно закрыли без авторизации
+        const checkClosed = setInterval(() => {
+            if (authWindow.closed) {
+                clearInterval(checkClosed);
+                window.removeEventListener('message', handleMessage);
+                reject('Окно авторизации закрыто');
+            }
+        }, 500);
+    });
+}
+
+// Сохранение файла на Яндекс Диск
+async function saveToYandexDisk() {
+    showLoader();
+
+    try {
+        let token = localStorage.getItem('yandex_token');
+        if (!token) {
+            token = await getYandexToken();
+            if (token) localStorage.setItem('yandex_token', token);
+        }
+
+        const backupData = JSON.stringify(books, null, 2);
+        const blob = new Blob([backupData], { type: 'application/json' });
+
+        // Создаём папку приложения
+        await fetch(`https://cloud-api.yandex.net/v1/disk/resources?path=${encodeURIComponent(YANDEX_APP_FOLDER)}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `OAuth ${token}` }
+        }).catch(() => {}); // игнорируем ошибку, если папка уже есть
+
+        // Получаем ссылку для загрузки
+        const uploadUrlResponse = await fetch(
+            `https://cloud-api.yandex.net/v1/disk/resources/upload?path=${encodeURIComponent(YANDEX_APP_FOLDER + YANDEX_BACKUP_FILE)}&overwrite=true`,
+            { headers: { 'Authorization': `OAuth ${token}` } }
+        );
+        const uploadData = await uploadUrlResponse.json();
+        const uploadHref = uploadData.href;
+
+        // Загружаем файл
+        const uploadResponse = await fetch(uploadHref, { method: 'PUT', body: blob });
+
+        if (uploadResponse.ok) {
+            alert('✅ Данные успешно сохранены на Яндекс Диск!');
+        } else {
+            throw new Error('Ошибка при загрузке файла');
+        }
+
+    } catch (error) {
+        console.error('Ошибка Яндекс Диска:', error);
+        alert('❌ Не удалось сохранить данные на Яндекс Диск');
+    } finally {
+        hideLoader();
+    }
+}
+
+// Загрузка файла с Яндекс Диска
+async function loadFromYandexDisk() {
+    showLoader();
+
+    try {
+        let token = localStorage.getItem('yandex_token');
+        if (!token) {
+            token = await getYandexToken();
+            if (token) localStorage.setItem('yandex_token', token);
+        }
+
+        const downloadUrlResponse = await fetch(
+            `https://cloud-api.yandex.net/v1/disk/resources/download?path=${encodeURIComponent(YANDEX_APP_FOLDER + YANDEX_BACKUP_FILE)}`,
+            { headers: { 'Authorization': `OAuth ${token}` } }
+        );
+
+        if (downloadUrlResponse.status === 404) {
+            alert('Бекап не найден на Яндекс Диске. Сначала сохраните библиотеку.');
+            hideLoader();
+            return;
+        }
+
+        const downloadData = await downloadUrlResponse.json();
+        const downloadHref = downloadData.href;
+
+        const fileResponse = await fetch(downloadHref);
+        const fileContent = await fileResponse.json();
+
+        books = fileContent;
+        saveBooks();
+
+        alert('✅ Данные успешно загружены с Яндекс Диска!');
+
+        if (document.getElementById('booksContainer')) renderBooks();
+        if (document.getElementById('shelfContainer')) renderShelf();
+        if (document.getElementById('authorFilter')) updateAuthorFilterOptions();
+
+    } catch (error) {
+        console.error('Ошибка загрузки с Яндекс Диска:', error);
+        alert('❌ Не удалось загрузить данные с Яндекс Диска');
+    } finally {
+        hideLoader();
+    }
+}
+
+

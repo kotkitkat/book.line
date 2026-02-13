@@ -704,6 +704,8 @@ h1, h2, h3, h4, .logo, .btn {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap; /* на случай узких экранов */
+    gap: 20px;
 }
 
 .footer__copy {
@@ -713,6 +715,7 @@ h1, h2, h3, h4, .logo, .btn {
 
 .footer__social {
     display: flex;
+    align-items: center;
     gap: 20px;
 }
 
@@ -725,10 +728,43 @@ h1, h2, h3, h4, .logo, .btn {
     border-radius: 50%;
     background: rgba(255,255,255,0.1);
     transition: background 0.3s;
+    color: white;
+    font-size: 1.2rem;
 }
 
 .footer__social a:hover {
     background: var(--gold);
+}
+
+/* ===== КНОПКИ ЯНДЕКС ДИСКА ===== */
+.footer__yandex {
+    display: flex;
+    gap: 10px;
+}
+
+.btn--yandex {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: white;
+    border-radius: 30px;
+    padding: 6px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-serif);
+    line-height: 1.5;
+    height: 36px;               /* как у иконок */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.btn--yandex:hover {
+    background: var(--gold);
+    color: var(--accent);
+    border-color: var(--gold);
+    transform: translateY(-2px);
 }
 
 /* ===== ЛОАДЕР: ДЫМЯЩАЯСЯ ЧАШКА ЧАЯ ===== */
@@ -872,7 +908,6 @@ h1, h2, h3, h4, .logo, .btn {
 .book-card__quotes {
     margin: 16px 0;
     padding: 0;
-    /* border-left удалён */
 }
 
 .quotes-list {
@@ -899,7 +934,16 @@ h1, h2, h3, h4, .logo, .btn {
     justify-content: flex-end;
 }
 
-
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    opacity: 0.3;
+    font-size: 0.8rem;
+    padding: 2px 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
 
 .btn-icon:hover {
     opacity: 1;
@@ -1069,48 +1113,6 @@ h1, h2, h3, h4, .logo, .btn {
     color: var(--gold);
 }
 
-/* Адаптивность */
-@media (max-width: 1000px) {
-    .container { padding: 0 25px; }
-    .books__grid { grid-template-columns: 1fr; }
-    .book-card { flex-direction: column; }
-    .book-card__cover { flex: 0 0 200px; }
-}
-
-@media (max-width: 768px) {
-    .nav {
-        position: fixed;
-        top: 80px;
-        left: -100%;
-        width: 100%;
-        height: calc(100vh - 80px);
-        background: rgba(253,250,247,0.98);
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transition: left 0.3s;
-        padding: 40px;
-    }
-    .nav.active { left: 0; }
-    .nav__list { flex-direction: column; align-items: center; gap: 30px; }
-    .burger { display: flex; }
-    .burger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
-    .burger.active span:nth-child(2) { opacity: 0; }
-    .burger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
-    .footer__inner { flex-direction: column; gap: 20px; }
-    .section-title { font-size: 2.2rem; }
-    .cup { font-size: 3rem; }
-    .steam span { width: 6px; height: 16px; }
-    .pagination-btn { min-width: 36px; height: 36px; font-size: 0.9rem; }
-    .filters-row { flex-direction: column; }
-    .filter-select { width: 100%; }
-    .sort-row { flex-wrap: wrap; }
-    .sort-select { flex: 1; }
-}
-
-.footer__social {
-    gap: 20px;
-}
 /* Пустые состояния */
 .empty-favorites, .empty-shelf {
     text-align: center;
@@ -1126,16 +1128,15 @@ h1, h2, h3, h4, .logo, .btn {
 /* Увеличиваем правый отступ у всех select, чтобы стрелка не налезала */
 .filter-select,
 .sort-select,
-.form-control select /* на случай, если где-то ещё */ {
-    padding-right: 35px !important;  /* место для стрелки */
-    appearance: none;                /* убираем стандартную стрелку (опционально) */
+.form-control select {
+    padding-right: 35px !important;
+    appearance: none;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235f5b58' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
     background-repeat: no-repeat;
     background-position: right 12px center;
     background-size: 16px;
 }
 
-/* Для красоты можно убрать стандартную стрелку в IE */
 .filter-select::-ms-expand,
 .sort-select::-ms-expand {
     display: none;
@@ -1147,36 +1148,15 @@ h1, h2, h3, h4, .logo, .btn {
     margin-top: 8px;
     font-style: italic;
     opacity: 0.9;
-    word-break: break-word;  /* перенос длинных фамилий */
+    word-break: break-word;
     max-width: 100%;
     line-height: 1.3;
 }
+
 /* Пагинация внутри сетки книг */
 .books__grid .pagination {
-    grid-column: 1 / -1;        /* занимает все колонки сетки */
+    grid-column: 1 / -1;
     display: flex;
-    justify-content: center;    /* центрируем кнопки */
-    margin-top: 40px;           /* отступ сверху (можно подогнать) */
-}
-
-.quotes-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-}
-
-.btn-icon {
-    background: transparent;
-    border: none;
-    color: var(--text-light);
-    opacity: 0.3;
-    font-size: 0.8rem;
-    padding: 2px 4px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-.btn-icon:hover {
-    opacity: 1;
-    color: var(--gold);
+    justify-content: center;
+    margin-top: 40px;
 }
