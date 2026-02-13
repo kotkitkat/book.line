@@ -80,10 +80,6 @@ h1, h2, h3, h4, .logo, .btn {
     font-size: 2rem;
 }
 
-.logo span {
-    color: var(--gold);
-}
-
 .nav__list {
     display: flex;
     gap: 40px;
@@ -114,6 +110,11 @@ h1, h2, h3, h4, .logo, .btn {
     height: 1px;
     background: var(--gold);
     transition: width 0.3s;
+}
+
+/* Убираем анимацию у активной ссылки, чтобы не было двойной полоски */
+.nav__link.active::after {
+    display: none;
 }
 
 .nav__link:hover::after {
@@ -195,7 +196,7 @@ h1, h2, h3, h4, .logo, .btn {
     box-shadow: 0 16px 30px rgba(0,0,0,0.06);
 }
 
-/* Заглушка обложки (всегда заглушка) */
+/* Заглушка обложки */
 .book-card__cover {
     flex: 0 0 200px;
     background: linear-gradient(145deg, var(--accent), #15202b);
@@ -290,22 +291,6 @@ h1, h2, h3, h4, .logo, .btn {
     letter-spacing: 1px;
 }
 
-/* Дополнительная цитата */
-.quote-block {
-    background: var(--bg-alt);
-    padding: 14px 18px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border: 1px dashed var(--gold);
-    font-style: italic;
-}
-
-.quote-block .label {
-    font-weight: 700;
-    color: var(--accent);
-    margin-right: 8px;
-}
-
 /* ===== РЕЙТИНГ ЧАШКАМИ ===== */
 .book-card__rating {
     display: flex;
@@ -388,8 +373,8 @@ h1, h2, h3, h4, .logo, .btn {
 .favorite-btn {
     background: transparent;
     border: none;
-    font-size: 1.6rem;        /* чуть крупнее — лучше видно */
-    color: rgba(80, 70, 60, 0.5); /* тёмно-серый с прозрачностью */
+    font-size: 1.6rem;
+    color: rgba(80, 70, 60, 0.5);
     cursor: pointer;
     transition: color 0.2s, opacity 0.2s;
     padding: 0;
@@ -400,18 +385,18 @@ h1, h2, h3, h4, .logo, .btn {
 }
 
 .favorite-btn:hover {
-    color: var(--gold);       /* золотой при наведении */
+    color: var(--gold);
     opacity: 1;
 }
 
 .favorite-btn.active {
-    color: #b38b4a;          /* светлый коричневый для активного */
+    color: #b38b4a;
     opacity: 1;
 }
 
-/* ===== РИСОВАННАЯ ПОЛКА (улучшенная текстура) ===== */
+/* ===== РИСОВАННАЯ ПОЛКА ===== */
 .shelf-container {
-    background: #e8e0d6;  /* база — тёплый серо-бежевый */
+    background: #e8e0d6;
     padding: 40px 30px 50px;
     border-radius: 30px 30px 15px 15px;
     box-shadow: 
@@ -450,7 +435,7 @@ h1, h2, h3, h4, .logo, .btn {
     border-radius: 10px;
 }
 
-/* Верхняя планка (имитация края полки) */
+/* Верхняя планка */
 .shelf-container::before {
     content: '';
     position: absolute;
@@ -461,17 +446,6 @@ h1, h2, h3, h4, .logo, .btn {
     background: rgba(0,0,0,0.05);
     border-radius: 20px;
     filter: blur(2px);
-}
-
-.shelf-container::before {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 20px;
-    right: 20px;
-    height: 8px;
-    background: repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 10px, transparent 10px, transparent 20px);
-    border-radius: 4px;
 }
 
 .books-shelf {
@@ -485,10 +459,10 @@ h1, h2, h3, h4, .logo, .btn {
 .shelf-book {
     position: relative;
     background: linear-gradient(145deg, #f3ede7, #e5ddd5);
-    width: 200px;           /* было 160px — стало просторнее */
-    min-height: 210px;      /* чуть уменьшили высоту */
+    width: 200px;
+    min-height: 210px;
     border-radius: 8px 8px 0 0;
-    padding: 18px 16px;     /* боковые отступы увеличены */
+    padding: 18px 16px;
     box-shadow: -5px 0 0 rgba(0,0,0,0.02), 8px 8px 20px rgba(0,0,0,0.04);
     display: flex;
     flex-direction: column;
@@ -504,7 +478,7 @@ h1, h2, h3, h4, .logo, .btn {
 
 .shelf-book-title {
     font-weight: 700;
-    font-size: 1.1rem;      /* чуть меньше, чтобы длинные названия не ломались */
+    font-size: 1.1rem;
     margin-bottom: 6px;
     color: var(--accent);
     word-break: break-word;
@@ -513,7 +487,7 @@ h1, h2, h3, h4, .logo, .btn {
 }
 
 .shelf-book-author {
-    font-size: 0.85rem;     /* немного уменьшили */
+    font-size: 0.85rem;
     color: var(--text-light);
     font-style: italic;
     margin-bottom: 10px;
@@ -523,24 +497,80 @@ h1, h2, h3, h4, .logo, .btn {
     font-size: 0.8rem;
     color: #5f5b58;
     background: rgba(255,255,255,0.5);
-    padding: 8px 10px;      /* горизонтальные отступы шире */
+    padding: 8px 10px;
     border-radius: 4px;
     border-left: 2px solid var(--gold);
     margin-top: auto;
 }
 
-/* Блок отзыва — подгоняем под новую ширину */
-.shelf-review {
-    margin-top: 12px;
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(2px);
-    border-radius: 8px;
-    padding: 10px 12px;     /* чуть шире */
-    border-left: 3px solid var(--gold);
-    font-size: 0.8rem;
+/* Кнопка удаления с полки */
+.shelf-remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: transparent;
+    border: none;
+    color: rgba(80, 70, 60, 0.4);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.1s;
+    padding: 0;
+    line-height: 1;
+    z-index: 5;
 }
 
-/* ===== ФОРМА ДОБАВЛЕНИЯ ===== */
+.shelf-remove-btn:hover {
+    color: #b38b4a;
+    transform: scale(1.1);
+}
+
+/* ===== МОЁ МНЕНИЕ НА ПОЛКЕ (КЛИКАБЕЛЬНО) ===== */
+.review-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.review-toggle:hover {
+    color: var(--gold);
+}
+
+.review-header {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.has-review-icon {
+    color: var(--gold);
+    font-size: 0.9rem;
+}
+
+/* ===== МОДАЛКА ОТЗЫВА ===== */
+.review-modal-content {
+    max-width: 600px;
+}
+
+.review-book-info {
+    background: var(--bg-alt);
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-style: italic;
+    border-left: 4px solid var(--gold);
+}
+
+/* ===== ФОРМА ДОБАВЛЕНИЯ КНИГИ ===== */
 .add-book {
     padding: 80px 0;
     background-color: var(--bg-alt);
@@ -585,7 +615,7 @@ h1, h2, h3, h4, .logo, .btn {
     box-shadow: 0 0 0 3px rgba(182,139,64,0.1);
 }
 
-/* ===== МОДАЛЬНЫЕ ОКНА ===== */
+/* ===== МОДАЛЬНЫЕ ОКНА (общие) ===== */
 .modal {
     display: none;
     position: fixed;
@@ -701,162 +731,6 @@ h1, h2, h3, h4, .logo, .btn {
     background: var(--gold);
 }
 
-/* ===== АДАПТИВНОСТЬ ===== */
-@media (max-width: 1000px) {
-    .container { padding: 0 25px; }
-    .books__grid { grid-template-columns: 1fr; }
-    .book-card { flex-direction: column; }
-    .book-card__cover { flex: 0 0 200px; }
-}
-
-@media (max-width: 768px) {
-    .nav {
-        position: fixed;
-        top: 80px;
-        left: -100%;
-        width: 100%;
-        height: calc(100vh - 80px);
-        background: rgba(253,250,247,0.98);
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transition: left 0.3s;
-        padding: 40px;
-    }
-    .nav.active { left: 0; }
-    .nav__list { flex-direction: column; align-items: center; gap: 30px; }
-    .burger { display: flex; }
-    .burger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
-    .burger.active span:nth-child(2) { opacity: 0; }
-    .burger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
-    .footer__inner { flex-direction: column; gap: 20px; }
-    .section-title { font-size: 2.2rem; }
-}
-/* ===== ДОПОЛНЕНИЯ ДЛЯ МОЕЙ ПОЛКИ (УДАЛЕНИЕ + ОТЗЫВЫ) ===== */
-
-/* Кнопка удаления с полки */
-.shelf-remove-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: transparent;
-    border: none;
-    color: rgba(80, 70, 60, 0.4);
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: color 0.2s, transform 0.1s;
-    padding: 0;
-    line-height: 1;
-    z-index: 5;
-}
-
-.shelf-remove-btn:hover {
-    color: #b38b4a;  /* светлый коричневый */
-    transform: scale(1.1);
-}
-
-/* Блок отзыва на полке */
-.shelf-review {
-    margin-top: 15px;
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(2px);
-    border-radius: 8px;
-    padding: 10px;
-    border-left: 3px solid var(--gold);
-    font-size: 0.85rem;
-}
-
-
-
-.review-text {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    background: white;
-    resize: vertical;
-    margin-bottom: 8px;
-}
-
-.save-review-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-    font-family: var(--font-serif);
-}
-
-.save-review-btn:hover {
-    background: var(--accent-light);
-}
-/* ===== СВОРАЧИВАНИЕ ОТЗЫВА НА ПОЛКЕ ===== */
-.review-toggle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 12px 0 4px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(0,0,0,0.05);
-}
-
-.review-toggle .review-header {
-    font-weight: 600;
-    color: var(--accent);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.toggle-review-btn {
-    background: transparent;
-    border: none;
-    color: rgba(80, 70, 60, 0.5);
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background 0.2s, color 0.2s;
-}
-
-.toggle-review-btn:hover {
-    background: rgba(0,0,0,0.05);
-    color: var(--gold);
-}
-
-/* Обёртка отзыва — по умолчанию скрыта */
-.review-wrapper {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.2s;
-    margin-top: 0;
-}
-
-.review-wrapper.expanded {
-    max-height: 300px;
-    opacity: 1;
-    margin-top: 8px;
-}
-
-/* Корректировка отступа в самом отзыве */
-.shelf-review {
-    margin-top: 0;
-}
 /* ===== ЛОАДЕР: ДЫМЯЩАЯСЯ ЧАШКА ЧАЯ ===== */
 #loader {
     position: fixed;
@@ -928,16 +802,6 @@ h1, h2, h3, h4, .logo, .btn {
     height: 22px;
 }
 
-.loader-text {
-    font-family: var(--font-serif);
-    color: var(--accent);
-    font-size: 1.1rem;
-    letter-spacing: 2px;
-    margin-top: 8px;
-    opacity: 0.8;
-    font-style: italic;
-}
-
 @keyframes steam {
     0% {
         opacity: 0;
@@ -958,8 +822,361 @@ h1, h2, h3, h4, .logo, .btn {
     50% { transform: rotate(3deg); }
 }
 
-/* Адаптив */
+/* ===== ПАГИНАЦИЯ ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 50px;
+    font-family: var(--font-serif);
+}
+
+.pagination-btn {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 8px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-btn:hover {
+    background: var(--gold-light);
+    border-color: var(--gold);
+    color: var(--accent);
+}
+
+.pagination-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.pagination-dots {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    margin: 0 4px;
+}
+
+/* ===== МНОЖЕСТВЕННЫЕ ЦИТАТЫ ===== */
+.book-card__quotes {
+    margin: 16px 0;
+    padding: 0;
+    /* border-left удалён */
+}
+
+.quotes-list {
+    margin-bottom: 10px;
+}
+
+.quote-item {
+    font-style: italic;
+    margin-bottom: 8px;
+    padding-left: 8px;
+    border-left: 2px solid var(--gold-light);
+}
+
+.quote-more {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+.quotes-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+
+
+.btn-icon:hover {
+    opacity: 1;
+    color: var(--gold);
+}
+
+.quote-count {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: inherit;
+}
+
+.quotes-list-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 20px 0;
+}
+
+.quotes-list-full {
+    list-style: none;
+}
+
+.quote-full-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.quote-full-text {
+    font-style: italic;
+    flex: 1;
+    margin-right: 15px;
+}
+
+.empty-quotes {
+    color: var(--text-light);
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+/* ===== ПАНЕЛЬ ПОИСКА И ФИЛЬТРОВ ===== */
+.search-panel {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 30px;
+}
+
+.search-row {
+    margin-bottom: 15px;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.search-input {
+    padding-left: 45px !important;
+    padding-right: 45px !important;
+}
+
+.btn-clear {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.btn-clear:hover {
+    opacity: 1;
+    color: var(--gold);
+}
+
+.filters-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    flex: 1;
+    min-width: 150px;
+    background-color: var(--bg);
+}
+
+.btn-filter-fav {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 20px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.btn-filter-fav.active {
+    background: var(--gold-light);
+    border-color: var(--gold);
+    color: var(--accent);
+}
+
+.btn-filter-fav:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.sort-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+}
+
+.sort-label {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.sort-select {
+    width: auto;
+    min-width: 180px;
+    background-color: var(--bg);
+}
+
+.btn-sort-order {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-sort-order:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+/* Адаптивность */
+@media (max-width: 1000px) {
+    .container { padding: 0 25px; }
+    .books__grid { grid-template-columns: 1fr; }
+    .book-card { flex-direction: column; }
+    .book-card__cover { flex: 0 0 200px; }
+}
+
 @media (max-width: 768px) {
+    .nav {
+        position: fixed;
+        top: 80px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 80px);
+        background: rgba(253,250,247,0.98);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: left 0.3s;
+        padding: 40px;
+    }
+    .nav.active { left: 0; }
+    .nav__list { flex-direction: column; align-items: center; gap: 30px; }
+    .burger { display: flex; }
+    .burger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+    .burger.active span:nth-child(2) { opacity: 0; }
+    .burger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+    .footer__inner { flex-direction: column; gap: 20px; }
+    .section-title { font-size: 2.2rem; }
     .cup { font-size: 3rem; }
     .steam span { width: 6px; height: 16px; }
+    .pagination-btn { min-width: 36px; height: 36px; font-size: 0.9rem; }
+    .filters-row { flex-direction: column; }
+    .filter-select { width: 100%; }
+    .sort-row { flex-wrap: wrap; }
+    .sort-select { flex: 1; }
+}
+
+.footer__social {
+    gap: 20px;
+}
+/* Пустые состояния */
+.empty-favorites, .empty-shelf {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-light);
+    font-style: italic;
+    font-size: 1.2rem;
+    background: var(--bg-alt);
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+/* Увеличиваем правый отступ у всех select, чтобы стрелка не налезала */
+.filter-select,
+.sort-select,
+.form-control select /* на случай, если где-то ещё */ {
+    padding-right: 35px !important;  /* место для стрелки */
+    appearance: none;                /* убираем стандартную стрелку (опционально) */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235f5b58' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+/* Для красоты можно убрать стандартную стрелку в IE */
+.filter-select::-ms-expand,
+.sort-select::-ms-expand {
+    display: none;
+}
+
+/* Обложка: автор */
+.cover-author {
+    font-size: 0.9rem !important;
+    margin-top: 8px;
+    font-style: italic;
+    opacity: 0.9;
+    word-break: break-word;  /* перенос длинных фамилий */
+    max-width: 100%;
+    line-height: 1.3;
+}
+/* Пагинация внутри сетки книг */
+.books__grid .pagination {
+    grid-column: 1 / -1;        /* занимает все колонки сетки */
+    display: flex;
+    justify-content: center;    /* центрируем кнопки */
+    margin-top: 40px;           /* отступ сверху (можно подогнать) */
+}
+
+.quotes-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    opacity: 0.3;
+    font-size: 0.8rem;
+    padding: 2px 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-icon:hover {
+    opacity: 1;
+    color: var(--gold);
 }

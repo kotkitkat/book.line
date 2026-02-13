@@ -35,8 +35,54 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Все книги</h2>
-                    <p class="section-subtitle">Первая и последняя строка — всё, что нужно для тайны</p>
+                    <p class="section-subtitle">Есть книги, где первая строчка — это уже финал, просто мы об этом еще не знаем</p>
                 </div>
+
+                <!-- Панель поиска и фильтров -->
+                <div class="search-panel">
+                    <div class="search-row">
+                        <div class="search-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="searchInput" class="form-control search-input" 
+                                   placeholder="Поиск по названию или автору...">
+                            <button id="clearFiltersBtn" class="btn-clear" title="Сбросить всё">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="filters-row">
+                        <select id="authorFilter" class="form-control filter-select">
+                            <option value="">Все авторы</option>
+                        </select>
+                        
+                        <select id="ratingFilter" class="form-control filter-select">
+                            <option value="0">Любой рейтинг</option>
+                            <option value="5">От 5 ☕</option>
+                            <option value="7">От 7 ☕</option>
+                            <option value="9">От 9 ☕</option>
+                        </select>
+                        
+                        <button id="favoriteFilterBtn" class="btn-filter-fav" title="Только избранное">
+                            <i class="fas fa-star"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="sort-row">
+                        <span class="sort-label">Сортировать:</span>
+                        <select id="sortBySelect" class="form-control sort-select">
+                            <option value="title">По названию</option>
+                            <option value="rating">По рейтингу</option>
+                            <option value="date">По дате добавления</option>
+                        </select>
+                        
+                        <button id="sortOrderBtn" class="btn-sort-order" title="Направление сортировки">
+                            <i class="fas fa-arrow-up"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Контейнер для книг и пагинации -->
                 <div id="booksContainer" class="books__grid"></div>
             </div>
         </section>
@@ -65,16 +111,12 @@
                     <label class="form-label">Последняя строка</label>
                     <textarea id="edit-lastLine" class="form-control" rows="2" required></textarea>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Цитата (необязательно)</label>
-                    <textarea id="edit-quote" class="form-control" rows="2"></textarea>
-                </div>
                 <button type="submit" class="btn btn--primary">Сохранить</button>
             </form>
         </div>
     </div>
 
-    <!-- Модальное окно добавления цитаты -->
+    <!-- Модальное окно добавления цитаты (старое, но оставим для совместимости) -->
     <div id="quoteModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -90,39 +132,52 @@
         </div>
     </div>
 
+    <!-- Модальное окно для всех цитат -->
+    <div id="quotesModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Цитаты из книги <span id="quotesBookTitle"></span></h2>
+            <div id="quotesListContainer" class="quotes-list-container" style="max-height: 300px; overflow-y: auto; margin: 20px 0;">
+                <!-- сюда будет подгружаться список цитат -->
+            </div>
+            <div class="form-group">
+                <label class="form-label">Новая цитата</label>
+                <textarea id="newQuoteText" class="form-control" rows="3" placeholder="Введите цитату..."></textarea>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button id="addQuoteBtn" class="btn btn--primary">Добавить</button>
+                    <button id="closeQuotesModalBtn" class="btn btn--outline">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="container">
             <div class="footer__inner">
-                <p class="footer__copy">© 2025 Спойлеры. Первые и последние строки.</p>
+                <p class="footer__copy">© 2026 Спойлеры. Первые и последние строки.</p>
                 <div class="footer__social">
-                    <a href="#"><i class="fab fa-telegram"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://t.me/timofkot" title="Telegram"><i class="fab fa-telegram"></i></a>
+                    <a href="mailto:gera.pirat@mail.ru" title="Написать письмо"><i class="fas fa-envelope"></i></a>
                 </div>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initBurger();
-            loadBooks();
-            renderBooks();
-        });
-    </script>
+  
+
     <!-- Лоадер: дымящаяся чашка чая -->
-<div id="loader">
-    <div class="tea-loader">
-        <div class="cup">
-            <i class="fas fa-mug-hot"></i>
-            <div class="steam">
-                <span></span>
-                <span></span>
-                <span></span>
+    <div id="loader">
+        <div class="tea-loader">
+            <div class="cup">
+                <i class="fas fa-mug-hot"></i>
+                <div class="steam">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>

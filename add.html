@@ -60,6 +60,27 @@
                             <button type="reset" class="btn btn--outline">Очистить</button>
                         </div>
                     </form>
+
+                    <hr style="margin: 40px 0; border: 1px dashed var(--border);">
+
+                    <h3 style="margin-bottom: 20px; font-size: 1.5rem;">Найти книгу в Открытой библиотеке</h3>
+                    <div class="search-openlibrary">
+                        <div class="form-group">
+                            <label class="form-label">Поиск по названию </label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="openLibrarySearchInput" class="form-control" 
+                                       placeholder="Например: Война и мир, Достоевский, Гарри Поттер..." 
+                                       style="flex: 1;">
+                                <button id="openLibrarySearchBtn" class="btn btn--primary" style="padding: 12px 30px;">
+                                    <i class="fas fa-search"></i> Найти
+                                </button>
+                            </div>
+                            <small style="color: var(--text-light); margin-top: 5px; display: block;">
+                                Результаты поиска по каталогу Google Books
+                            </small>
+                        </div>
+                        <div id="openLibraryResults" style="margin-top: 30px;"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -68,36 +89,29 @@
     <footer class="footer">
         <div class="container">
             <div class="footer__inner">
-                <p class="footer__copy">© 2025 Спойлеры. Первые и последние строки.</p>
+                <p class="footer__copy">© 2026 Спойлеры. Первые и последние строки.</p>
                 <div class="footer__social">
-                    <a href="#"><i class="fab fa-telegram"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://t.me/timofkot" title="Telegram"><i class="fab fa-telegram"></i></a>
+                    <a href="mailto:gera.pirat@mail.ru" title="Написать письмо"><i class="fas fa-envelope"></i></a>
                 </div>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initBurger();
-            loadBooks();
-            initAddBookForm();
-        });
-    </script>
-    <!-- Лоадер: дымящаяся чашка чая -->
-<div id="loader">
-    <div class="tea-loader">
-        <div class="cup">
-            <i class="fas fa-mug-hot"></i>
-            <div class="steam">
-                <span></span>
-                <span></span>
-                <span></span>
+ 
+
+    <div id="loader">
+        <div class="tea-loader">
+            <div class="cup">
+                <i class="fas fa-mug-hot"></i>
+                <div class="steam">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>
