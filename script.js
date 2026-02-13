@@ -1015,8 +1015,6 @@ if (saveYandexBtn) {
 if (loadYandexBtn) {
     loadYandexBtn.addEventListener('click', loadFromYandexDisk);
 }
-});
-
 document.getElementById('importFromFileBtn').addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -1041,6 +1039,8 @@ document.getElementById('importFromFileBtn').addEventListener('click', () => {
     };
     input.click();
 });
+});
+
 
 // Скрываем лоадер при возврате по истории
 window.addEventListener('pageshow', hideLoader);
@@ -1211,20 +1211,33 @@ async function loadFromYandexDisk() {
             return;
         }
 
-        // Заменяем текущую библиотеку
+        // Успех – загружаем данные
         books = fileContent;
         saveBooks();
-
         alert('✅ Данные успешно загружены с Яндекс Диска!');
-
-        // Обновляем интерфейс
         if (document.getElementById('booksContainer')) renderBooks();
         if (document.getElementById('shelfContainer')) renderShelf();
         if (document.getElementById('authorFilter')) updateAuthorFilterOptions();
 
     } catch (error) {
         console.error('Ошибка загрузки с Яндекс Диска:', error);
-        alert('❌ Не удалось загрузить данные с Яндекс Диска');
+        // Даже если ошибка, предлагаем скачать вручную (если есть downloadHref)
+        if (typeof downloadHref !== 'undefined') {
+            const userChoice = confirm(
+                'Произошла ошибка при автоматической загрузке.\n\n' +
+                'Хотите скачать файл вручную?'
+            );
+            if (userChoice) {
+                const link = document.createElement('a');
+                link.href = downloadHref;
+                link.download = YANDEX_BACKUP_FILE;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        } else {
+            alert('❌ Не удалось загрузить данные с Яндекс Диска');
+        }
     } finally {
         hideLoader();
     }
