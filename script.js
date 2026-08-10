@@ -328,16 +328,19 @@ function attachPaginationEvents() {
 // ========== СОЗДАНИЕ КАРТОЧКИ (С ЗАЩИТОЙ ОТ СПОЙЛЕРОВ) ==========
 function createBookCard(book) {
     const authorLastName = book.author.split(' ').pop();
-    const coverHtml = `<div class="cover-placeholder">
-                        <i class="fas fa-layer-group"></i>
-                        <span>${book.title}</span>
-                        <span class="cover-author">${authorLastName}</span>
-                    </div>`;
+    // Если есть обложка — показываем её, иначе заглушку
+    const coverHtml = book.coverUrl 
+        ? `<img src="${book.coverUrl}" alt="${book.title}" style="width: 100%; height: 100%; object-fit: cover; display: block;">`
+        : `<div class="cover-placeholder">
+            <i class="fas fa-layer-group"></i>
+            <span>${book.title}</span>
+            <span class="cover-author">${authorLastName}</span>
+          </div>`;
 
-    // ОБНОВЛЁННЫЙ БЛОК СПОЙЛЕРОВ (последняя строка скрыта)
+    //  ОБНОВЛЁННЫЙ БЛОК СПОЙЛЕРОВ (последняя строка скрыта)
     const spoilerHtml = `<div class="spoiler-lines">
                             <div class="first-line"><span class="label">Первая строка:</span> «${book.firstLine}»</div>
-                            <div class="last-line spoiler-hidden" data-revealed="false">
+                              <div class="last-line spoiler-hidden" data-revealed="false">
                                 <span class="label">Последняя строка:</span>
                             </div>
                             <div class="last-line spoiler-hidden" data-revealed="false">
@@ -419,30 +422,28 @@ function createBookCard(book) {
 
 // ========== СОБЫТИЯ НА КАРТОЧКАХ ==========
 function attachBookEvents() {
-    // Рейтинг
-document.querySelectorAll('.mug-rating').forEach(ratingDiv => {
-    const bookId = ratingDiv.dataset.bookId;
-    const mugs = ratingDiv.querySelectorAll('.mug-icon');
-    mugs.forEach(mug => {
-        mug.addEventListener('click', async function(e) {
-            e.stopPropagation();
-            const rating = parseInt(this.dataset.rating);
-            const book = books.find(b => b.id === bookId);
-            if (book) {
-                // Если кликнули на уже активную чашку — сбрасываем рейтинг в 0
-                const newRating = (book.rating === rating) ? 0 : rating;
-                book.rating = newRating;
-                await saveBookToFirestore(book);
-                // Обновляем отображение всех чашек
-                mugs.forEach((m, idx) => {
-                    const mugIdx = idx + 1;
-                    m.classList.toggle('active', mugIdx <= newRating);
-                    m.classList.toggle('smoking', mugIdx === newRating);
-                });
-            }
+    // Рейтинг (с возможностью сброса при повторном клике)
+    document.querySelectorAll('.mug-rating').forEach(ratingDiv => {
+        const bookId = ratingDiv.dataset.bookId;
+        const mugs = ratingDiv.querySelectorAll('.mug-icon');
+        mugs.forEach(mug => {
+            mug.addEventListener('click', async function(e) {
+                e.stopPropagation();
+                const rating = parseInt(this.dataset.rating);
+                const book = books.find(b => b.id === bookId);
+                if (book) {
+                    const newRating = (book.rating === rating) ? 0 : rating;
+                    book.rating = newRating;
+                    await saveBookToFirestore(book);
+                    mugs.forEach((m, idx) => {
+                        const mugIdx = idx + 1;
+                        m.classList.toggle('active', mugIdx <= newRating);
+                        m.classList.toggle('smoking', mugIdx === newRating);
+                    });
+                }
+            });
         });
     });
-});
 
     // Избранное
     document.querySelectorAll('.favorite-btn').forEach(btn => {
@@ -506,15 +507,13 @@ document.querySelectorAll('.mug-rating').forEach(ratingDiv => {
         });
     });
 
-    // ===== НОВЫЙ ОБРАБОТЧИК ДЛЯ СПОЙЛЕРОВ =====
+    // Обработчик клика для раскрытия спойлера (последняя строка)
     document.querySelectorAll('.spoiler-hidden').forEach(block => {
-        // Удаляем старый обработчик, чтобы избежать дублирования
         block.removeEventListener('click', handleSpoilerClick);
         block.addEventListener('click', handleSpoilerClick);
     });
 }
 
-// Функция-обработчик для спойлера
 function handleSpoilerClick(e) {
     e.stopPropagation();
     const block = this;
@@ -522,7 +521,7 @@ function handleSpoilerClick(e) {
         block.classList.add('revealed');
         block.dataset.revealed = 'true';
     } else {
-        // Опционально: можно снова скрыть, если раскомментировать:
+        // можно снова скрыть, если раскомментировать:
         // block.classList.remove('revealed');
         // block.dataset.revealed = 'false';
     }
@@ -609,16 +608,47 @@ function openEditModal(book) {
     document.getElementById('edit-author').value = book.author;
     document.getElementById('edit-firstLine').value = book.firstLine;
     document.getElementById('edit-lastLine').value = book.lastLine;
+    // Если есть поле для обложки, заполним его
+    const coverInput = document.getElementById('edit-cover');
+    const previewDiv = document.getElementById('edit-cover-preview');
+    const previewImg = document.getElementById('edit-cover-preview-img');
+    if (coverInput) {
+        coverInput.value = ''; // сброс поля
+        if (book.coverUrl) {
+            if (previewImg) previewImg.src = book.coverUrl;
+            if (previewDiv) previewDiv.style.display = 'block';
+        } else {
+            if (previewDiv) previewDiv.style.display = 'none';
+        }
+    }
     modal.style.display = 'flex';
 }
 
 function initEditModal() {
     const modal = document.getElementById('editModal');
+    if (!modal) return;
     const closeBtn = modal.querySelector('.close-modal');
     const form = document.getElementById('editForm');
 
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+    // Обработка кнопки "Удалить обложку" (если есть)
+    const removeCoverBtn = document.getElementById('edit-remove-cover-btn');
+    if (removeCoverBtn) {
+        removeCoverBtn.addEventListener('click', function() {
+            const previewDiv = document.getElementById('edit-cover-preview');
+            const coverInput = document.getElementById('edit-cover');
+            if (previewDiv) previewDiv.style.display = 'none';
+            if (coverInput) coverInput.value = '';
+            // Флаг, что обложку удалили — будем использовать при сохранении
+            const bookId = document.getElementById('edit-id').value;
+            const book = books.find(b => b.id === bookId);
+            if (book) {
+                book.coverUrl = ''; // удаляем ссылку на обложку
+            }
+        });
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -629,6 +659,14 @@ function initEditModal() {
             book.author = document.getElementById('edit-author').value;
             book.firstLine = document.getElementById('edit-firstLine').value;
             book.lastLine = document.getElementById('edit-lastLine').value;
+            // Обложка: если есть поле для ввода URL, берём его
+            const coverUrlInput = document.getElementById('edit-cover-url');
+            if (coverUrlInput) {
+                book.coverUrl = coverUrlInput.value.trim();
+            } else {
+                // Если нет отдельного поля, то используем cover из data (удаление уже обработано)
+                // или не трогаем
+            }
             await saveBookToFirestore(book);
             modal.style.display = 'none';
             renderBooks();
@@ -776,13 +814,35 @@ function initAddBookForm() {
             rating: 0,
             isFavorite: false,
             quotes: [],
-            review: ''
+            review: '',
+            coverUrl: '' // поле для обложки
         };
+        // Если есть поле для обложки, берём значение
+        const coverInput = document.getElementById('bookCoverUrl');
+        if (coverInput) {
+            newBook.coverUrl = coverInput.value.trim();
+        }
         books.push(newBook);
         await saveBookToFirestore(newBook);
         showLoader();
         setTimeout(() => { window.location.href = 'index.html'; }, 80);
     });
+
+    // Превью обложки (если есть поле)
+    const coverUrlInput = document.getElementById('bookCoverUrl');
+    const previewDiv = document.getElementById('coverPreview');
+    const previewImg = document.getElementById('coverPreviewImg');
+    if (coverUrlInput && previewDiv && previewImg) {
+        coverUrlInput.addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url) {
+                previewImg.src = url;
+                previewDiv.style.display = 'block';
+            } else {
+                previewDiv.style.display = 'none';
+            }
+        });
+    }
 }
 
 // ========== ЛОАДЕР ПРИ ПЕРЕХОДАХ ==========
@@ -797,61 +857,79 @@ function initNavLoader() {
     });
 }
 
-// ========== GOOGLE BOOKS ==========
-async function searchGoogleBooks(query) {
-    if (!query.trim()) { alert('Введите поисковый запрос'); return; }
+// ========== ПОИСК КНИГ ЧЕРЕЗ OPEN LIBRARY (БЕСПЛАТНО, БЕЗ КЛЮЧЕЙ) ==========
+async function searchOpenLibrary(query) {
+    if (!query.trim()) {
+        alert('Введите поисковый запрос');
+        return;
+    }
+
     showLoader();
+
     try {
-        const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=5&langRestrict=ru`;
+        const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`;
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
         const data = await response.json();
         hideLoader();
-        if (!data.items || data.items.length === 0) {
-            renderGoogleBooksResults([]);
+
+        if (!data.docs || data.docs.length === 0) {
+            renderOpenLibraryResults([]);
             return;
         }
-        const booksData = data.items.map(item => {
-            const volume = item.volumeInfo;
+
+        const booksData = data.docs.map(doc => {
+            const title = doc.title || 'Без названия';
+            const author = doc.author_name ? doc.author_name[0] : 'Неизвестный автор';
+            const year = doc.first_publish_year || doc.publish_year?.[0] || '—';
+            const isbn = doc.isbn ? doc.isbn[0] : null;
+            let coverUrl = '';
+            if (isbn) {
+                coverUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`;
+            }
             return {
-                title: volume.title || 'Без названия',
-                author_name: volume.authors ? [volume.authors[0]] : ['Неизвестный автор'],
-                first_publish_year: volume.publishedDate ? volume.publishedDate.substring(0, 4) : '—',
-                cover_i: volume.imageLinks?.thumbnail?.match(/id=([^&]+)/)?.[1],
-                isbn: volume.industryIdentifiers?.[0]?.identifier
+                title: title,
+                author_name: [author],
+                first_publish_year: String(year),
+                coverUrl: coverUrl,
+                isbn: isbn
             };
         });
-        renderGoogleBooksResults(booksData);
+
+        renderOpenLibraryResults(booksData);
     } catch (error) {
-        console.error('Google Books API error:', error);
+        console.error('Open Library API error:', error);
         hideLoader();
         alert('Не удалось загрузить книги. Попробуйте позже.');
     }
 }
 
-function renderGoogleBooksResults(booksData) {
+function renderOpenLibraryResults(booksData) {
     const container = document.getElementById('openLibraryResults');
     if (!container) return;
+
     if (booksData.length === 0) {
         container.innerHTML = '<p style="color: var(--text-light); padding: 20px; text-align: center;">📚 Книги не найдены. Попробуйте другой запрос.</p>';
         return;
     }
+
     let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">';
+
     booksData.forEach(book => {
         const title = book.title || 'Без названия';
         const author = book.author_name?.[0] || 'Неизвестный автор';
         const year = book.first_publish_year || '—';
-        let coverUrl = '';
-        if (book.cover_i) {
-            coverUrl = `https://books.google.com/books/content?id=${book.cover_i}&printsec=frontcover&img=1&zoom=1&source=gbs_api`;
-        } else if (book.isbn) {
-            coverUrl = `https://books.google.com/books/content?isbn=${book.isbn}&printsec=frontcover&img=1&zoom=1`;
-        }
+        const coverUrl = book.coverUrl || '';
+
         html += `
             <div class="book-card" style="flex-direction: column; margin: 0;">
                 <div class="book-card__cover" style="flex: 0 0 160px; width: 100%;">
                     ${coverUrl 
-                        ? `<img src="${coverUrl}" alt="${title}" style="width: 100%; height: 100%; object-fit: cover;">`
+                        ? `<img src="${coverUrl}" alt="${title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">`
                         : `<div class="cover-placeholder" style="height: 160px;">
                             <i class="fas fa-book"></i>
                             <span>${title.substring(0, 20)}…</span>
@@ -862,7 +940,7 @@ function renderGoogleBooksResults(booksData) {
                     <h4 style="font-size: 1.2rem; margin-bottom: 4px;">${title}</h4>
                     <p style="color: var(--gold); margin-bottom: 8px;">${author}</p>
                     <p style="color: var(--text-light); font-size: 0.9rem;">Год: ${year}</p>
-                    <button class="btn btn--primary import-googlebooks-btn" 
+                    <button class="btn btn--primary import-openlibrary-btn" 
                             style="margin-top: 12px; padding: 8px 16px; font-size: 0.9rem;"
                             data-title="${title.replace(/"/g, '&quot;')}"
                             data-author="${author.replace(/"/g, '&quot;')}">
@@ -872,10 +950,11 @@ function renderGoogleBooksResults(booksData) {
             </div>
         `;
     });
+
     html += '</div>';
     container.innerHTML = html;
 
-    document.querySelectorAll('.import-googlebooks-btn').forEach(btn => {
+    document.querySelectorAll('.import-openlibrary-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             document.getElementById('bookTitle').value = this.dataset.title;
@@ -888,17 +967,17 @@ function renderGoogleBooksResults(booksData) {
     });
 }
 
-let googleBooksSearchInitialized = false;
-function initGoogleBooksSearch() {
-    if (googleBooksSearchInitialized) return;
+let openLibrarySearchInitialized = false;
+function initOpenLibrarySearch() {
+    if (openLibrarySearchInitialized) return;
     const searchBtn = document.getElementById('openLibrarySearchBtn');
     const searchInput = document.getElementById('openLibrarySearchInput');
     if (searchBtn && searchInput) {
-        searchBtn.addEventListener('click', () => searchGoogleBooks(searchInput.value));
+        searchBtn.addEventListener('click', () => searchOpenLibrary(searchInput.value));
         searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); searchGoogleBooks(searchInput.value); }
+            if (e.key === 'Enter') { e.preventDefault(); searchOpenLibrary(searchInput.value); }
         });
-        googleBooksSearchInitialized = true;
+        openLibrarySearchInitialized = true;
     }
 }
 
@@ -1045,7 +1124,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         initAddBookForm();
     }
     
-    initGoogleBooksSearch();
+    // Инициализация поиска через Open Library (вместо Google Books)
+    initOpenLibrarySearch();
+    
     initNavLoader();
     
     const saveYandexBtn = document.getElementById('saveToYandexBtn');
