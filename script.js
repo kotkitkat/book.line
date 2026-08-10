@@ -325,7 +325,7 @@ function attachPaginationEvents() {
     });
 }
 
-// ========== СОЗДАНИЕ КАРТОЧКИ ==========
+// ========== СОЗДАНИЕ КАРТОЧКИ (С ЗАЩИТОЙ ОТ СПОЙЛЕРОВ) ==========
 function createBookCard(book) {
     const authorLastName = book.author.split(' ').pop();
     const coverHtml = `<div class="cover-placeholder">
@@ -334,9 +334,16 @@ function createBookCard(book) {
                         <span class="cover-author">${authorLastName}</span>
                     </div>`;
 
+    // ОБНОВЛЁННЫЙ БЛОК СПОЙЛЕРОВ (последняя строка скрыта)
     const spoilerHtml = `<div class="spoiler-lines">
                             <div class="first-line"><span class="label">Первая строка:</span> «${book.firstLine}»</div>
-                            <div class="last-line"><span class="label">Последняя строка:</span> «${book.lastLine}»</div>
+                            <div class="last-line spoiler-hidden" data-revealed="false">
+                                <span class="label">Последняя строка:</span>
+                            </div>
+                            <div class="last-line spoiler-hidden" data-revealed="false">
+                                <span class="spoiler-text">«${book.lastLine}»</span>
+                                <span class="spoiler-overlay"><i class="fas fa-eye"></i> Нажмите, чтобы прочитать спойлер</span>
+                            </div>
                         </div>`;
 
     let quotesHtml = '';
@@ -377,7 +384,6 @@ function createBookCard(book) {
         const smokingClass = i === book.rating ? 'smoking' : '';
         mugsHtml += `<span class="mug-icon ${activeClass} ${smokingClass}" data-rating="${i}">
                         <i class="fas fa-mug-hot"></i>
-                        <i class="fas fa-smog smoke"></i>
                     </span>`;
     }
 
@@ -413,27 +419,32 @@ function createBookCard(book) {
 
 // ========== СОБЫТИЯ НА КАРТОЧКАХ ==========
 function attachBookEvents() {
-    document.querySelectorAll('.mug-rating').forEach(ratingDiv => {
-        const bookId = ratingDiv.dataset.bookId;
-        const mugs = ratingDiv.querySelectorAll('.mug-icon');
-        mugs.forEach(mug => {
-            mug.addEventListener('click', async function(e) {
-                e.stopPropagation();
-                const rating = parseInt(this.dataset.rating);
-                const book = books.find(b => b.id === bookId);
-                if (book) {
-                    book.rating = rating;
-                    await saveBookToFirestore(book);
-                    mugs.forEach((m, idx) => {
-                        const mugIdx = idx + 1;
-                        m.classList.toggle('active', mugIdx <= rating);
-                        m.classList.toggle('smoking', mugIdx === rating);
-                    });
-                }
-            });
+    // Рейтинг
+document.querySelectorAll('.mug-rating').forEach(ratingDiv => {
+    const bookId = ratingDiv.dataset.bookId;
+    const mugs = ratingDiv.querySelectorAll('.mug-icon');
+    mugs.forEach(mug => {
+        mug.addEventListener('click', async function(e) {
+            e.stopPropagation();
+            const rating = parseInt(this.dataset.rating);
+            const book = books.find(b => b.id === bookId);
+            if (book) {
+                // Если кликнули на уже активную чашку — сбрасываем рейтинг в 0
+                const newRating = (book.rating === rating) ? 0 : rating;
+                book.rating = newRating;
+                await saveBookToFirestore(book);
+                // Обновляем отображение всех чашек
+                mugs.forEach((m, idx) => {
+                    const mugIdx = idx + 1;
+                    m.classList.toggle('active', mugIdx <= newRating);
+                    m.classList.toggle('smoking', mugIdx === newRating);
+                });
+            }
         });
     });
+});
 
+    // Избранное
     document.querySelectorAll('.favorite-btn').forEach(btn => {
         btn.addEventListener('click', async function(e) {
             e.stopPropagation();
@@ -448,6 +459,7 @@ function attachBookEvents() {
         });
     });
 
+    // Действия: редактировать, удалить
     document.querySelectorAll('.action-icon').forEach(icon => {
         icon.addEventListener('click', async function(e) {
             e.stopPropagation();
@@ -468,6 +480,7 @@ function attachBookEvents() {
         });
     });
 
+    // Показать цитаты
     document.querySelectorAll('.show-quotes-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -477,6 +490,7 @@ function attachBookEvents() {
         });
     });
 
+    // Добавить цитату
     document.querySelectorAll('.add-quote-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -491,6 +505,27 @@ function attachBookEvents() {
             }
         });
     });
+
+    // ===== НОВЫЙ ОБРАБОТЧИК ДЛЯ СПОЙЛЕРОВ =====
+    document.querySelectorAll('.spoiler-hidden').forEach(block => {
+        // Удаляем старый обработчик, чтобы избежать дублирования
+        block.removeEventListener('click', handleSpoilerClick);
+        block.addEventListener('click', handleSpoilerClick);
+    });
+}
+
+// Функция-обработчик для спойлера
+function handleSpoilerClick(e) {
+    e.stopPropagation();
+    const block = this;
+    if (block.dataset.revealed === 'false') {
+        block.classList.add('revealed');
+        block.dataset.revealed = 'true';
+    } else {
+        // Опционально: можно снова скрыть, если раскомментировать:
+        // block.classList.remove('revealed');
+        // block.dataset.revealed = 'false';
+    }
 }
 
 // ========== МОДАЛКА ЦИТАТ ==========

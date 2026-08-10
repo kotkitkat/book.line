@@ -43,7 +43,7 @@ ul {
     list-style: none;
 }
 
-h1, h2, h3, h4, .logo, .btn {
+h1, h2, h3, .logo, .btn {
     font-family: var(--font-serif);
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -112,7 +112,6 @@ h1, h2, h3, h4, .logo, .btn {
     transition: width 0.3s;
 }
 
-/* Убираем анимацию у активной ссылки, чтобы не было двойной полоски */
 .nav__link.active::after {
     display: none;
 }
@@ -168,7 +167,7 @@ h1, h2, h3, h4, .logo, .btn {
     font-style: italic;
 }
 
-/* ===== КАРТОЧКА КНИГИ (библиотека) ===== */
+/* ===== КАРТОЧКА КНИГИ ===== */
 .books {
     padding: 80px 0;
 }
@@ -196,7 +195,6 @@ h1, h2, h3, h4, .logo, .btn {
     box-shadow: 0 16px 30px rgba(0,0,0,0.06);
 }
 
-/* Заглушка обложки */
 .book-card__cover {
     flex: 0 0 200px;
     background: linear-gradient(145deg, var(--accent), #15202b);
@@ -238,6 +236,9 @@ h1, h2, h3, h4, .logo, .btn {
     margin-top: 8px;
     font-style: italic;
     opacity: 0.9;
+    word-break: break-word;
+    max-width: 100%;
+    line-height: 1.3;
 }
 
 .book-card__info {
@@ -269,7 +270,7 @@ h1, h2, h3, h4, .logo, .btn {
     padding-bottom: 12px;
 }
 
-/* Первая и последняя строки */
+/* Спойлер-блок */
 .spoiler-lines {
     background: var(--bg-alt);
     padding: 16px;
@@ -291,7 +292,58 @@ h1, h2, h3, h4, .logo, .btn {
     letter-spacing: 1px;
 }
 
-/* ===== РЕЙТИНГ ЧАШКАМИ ===== */
+/* ===== ЗАЩИТА ОТ СПОЙЛЕРОВ ===== */
+.spoiler-hidden {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    transition: filter 0.3s ease;
+}
+
+.spoiler-hidden .spoiler-text {
+    filter: blur(12px);
+    transition: filter 0.4s ease;
+    pointer-events: none;
+}
+
+.spoiler-hidden .spoiler-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+    transition: opacity 0.4s ease;
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+}
+
+.spoiler-hidden .spoiler-overlay i {
+    margin-right: 8px;
+}
+
+.spoiler-hidden.revealed .spoiler-text {
+    filter: blur(0);
+}
+
+.spoiler-hidden.revealed .spoiler-overlay {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.spoiler-hidden:hover .spoiler-overlay {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* ===== РЕЙТИНГ ===== */
 .book-card__rating {
     display: flex;
     align-items: center;
@@ -330,7 +382,6 @@ h1, h2, h3, h4, .logo, .btn {
     transform: scale(1.15);
 }
 
-/* Дымок только у выбранной чашки */
 .mug-icon .smoke {
     position: absolute;
     top: -16px;
@@ -347,7 +398,6 @@ h1, h2, h3, h4, .logo, .btn {
     opacity: 1;
 }
 
-/* ===== ДЕЙСТВИЯ С КНИГОЙ ===== */
 .book-actions {
     display: flex;
     gap: 20px;
@@ -369,7 +419,7 @@ h1, h2, h3, h4, .logo, .btn {
     transform: scale(1.1);
 }
 
-/* ===== КНОПКА ИЗБРАННОГО (СТОПКА КНИГ) ===== */
+/* ===== ИЗБРАННОЕ ===== */
 .favorite-btn {
     background: transparent;
     border: none;
@@ -394,7 +444,7 @@ h1, h2, h3, h4, .logo, .btn {
     opacity: 1;
 }
 
-/* ===== РИСОВАННАЯ ПОЛКА ===== */
+/* ===== ПОЛКА ===== */
 .shelf-container {
     background: #e8e0d6;
     padding: 40px 30px 50px;
@@ -416,7 +466,6 @@ h1, h2, h3, h4, .logo, .btn {
         linear-gradient(145deg, #e8e0d6 0%, #dbd2c8 100%);
 }
 
-/* Эффект «дощечек» — вертикальные линии */
 .shelf-container::after {
     content: '';
     position: absolute;
@@ -435,7 +484,6 @@ h1, h2, h3, h4, .logo, .btn {
     border-radius: 10px;
 }
 
-/* Верхняя планка */
 .shelf-container::before {
     content: '';
     position: absolute;
@@ -503,7 +551,6 @@ h1, h2, h3, h4, .logo, .btn {
     margin-top: auto;
 }
 
-/* Кнопка удаления с полки */
 .shelf-remove-btn {
     position: absolute;
     top: 5px;
@@ -524,7 +571,7 @@ h1, h2, h3, h4, .logo, .btn {
     transform: scale(1.1);
 }
 
-/* ===== МОЁ МНЕНИЕ НА ПОЛКЕ (КЛИКАБЕЛЬНО) ===== */
+/* ===== МОЁ МНЕНИЕ ===== */
 .review-toggle {
     display: flex;
     align-items: center;
@@ -556,7 +603,6 @@ h1, h2, h3, h4, .logo, .btn {
     font-size: 0.9rem;
 }
 
-/* ===== МОДАЛКА ОТЗЫВА ===== */
 .review-modal-content {
     max-width: 600px;
 }
@@ -570,7 +616,7 @@ h1, h2, h3, h4, .logo, .btn {
     border-left: 4px solid var(--gold);
 }
 
-/* ===== ФОРМА ДОБАВЛЕНИЯ КНИГИ ===== */
+/* ===== ФОРМА ДОБАВЛЕНИЯ ===== */
 .add-book {
     padding: 80px 0;
     background-color: var(--bg-alt);
@@ -615,7 +661,23 @@ h1, h2, h3, h4, .logo, .btn {
     box-shadow: 0 0 0 3px rgba(182,139,64,0.1);
 }
 
-/* ===== МОДАЛЬНЫЕ ОКНА (общие) ===== */
+.filter-select,
+.sort-select,
+.form-control select {
+    padding-right: 35px !important;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235f5b58' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+.filter-select::-ms-expand,
+.sort-select::-ms-expand {
+    display: none;
+}
+
+/* ===== МОДАЛКИ ===== */
 .modal {
     display: none;
     position: fixed;
@@ -704,7 +766,7 @@ h1, h2, h3, h4, .logo, .btn {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* на случай узких экранов */
+    flex-wrap: wrap;
     gap: 20px;
 }
 
@@ -736,7 +798,6 @@ h1, h2, h3, h4, .logo, .btn {
     background: var(--gold);
 }
 
-/* ===== КНОПКИ ЯНДЕКС ДИСКА ===== */
 .footer__yandex {
     display: flex;
     gap: 10px;
@@ -753,7 +814,7 @@ h1, h2, h3, h4, .logo, .btn {
     transition: all 0.2s;
     font-family: var(--font-serif);
     line-height: 1.5;
-    height: 36px;               /* как у иконок */
+    height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -767,7 +828,7 @@ h1, h2, h3, h4, .logo, .btn {
     transform: translateY(-2px);
 }
 
-/* ===== ЛОАДЕР: ДЫМЯЩАЯСЯ ЧАШКА ЧАЯ ===== */
+/* ===== ЛОАДЕР ===== */
 #loader {
     position: fixed;
     top: 0;
@@ -839,18 +900,9 @@ h1, h2, h3, h4, .logo, .btn {
 }
 
 @keyframes steam {
-    0% {
-        opacity: 0;
-        transform: translateY(0) scaleX(1);
-    }
-    50% {
-        opacity: 1;
-        transform: translateY(-15px) scaleX(1.2);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-30px) scaleX(0.8);
-    }
+    0% { opacity: 0; transform: translateY(0) scaleX(1); }
+    50% { opacity: 1; transform: translateY(-15px) scaleX(1.2); }
+    100% { opacity: 0; transform: translateY(-30px) scaleX(0.8); }
 }
 
 @keyframes wobble {
@@ -904,7 +956,7 @@ h1, h2, h3, h4, .logo, .btn {
     margin: 0 4px;
 }
 
-/* ===== МНОЖЕСТВЕННЫЕ ЦИТАТЫ ===== */
+/* ===== ЦИТАТЫ ===== */
 .book-card__quotes {
     margin: 16px 0;
     padding: 0;
@@ -987,7 +1039,7 @@ h1, h2, h3, h4, .logo, .btn {
     padding: 20px;
 }
 
-/* ===== ПАНЕЛЬ ПОИСКА И ФИЛЬТРОВ ===== */
+/* ===== ПОИСК И ФИЛЬТРЫ ===== */
 .search-panel {
     background: white;
     padding: 20px;
@@ -1113,7 +1165,6 @@ h1, h2, h3, h4, .logo, .btn {
     color: var(--gold);
 }
 
-/* Пустые состояния */
 .empty-favorites, .empty-shelf {
     text-align: center;
     padding: 60px 20px;
@@ -1125,35 +1176,6 @@ h1, h2, h3, h4, .logo, .btn {
     margin: 20px 0;
 }
 
-/* Увеличиваем правый отступ у всех select, чтобы стрелка не налезала */
-.filter-select,
-.sort-select,
-.form-control select {
-    padding-right: 35px !important;
-    appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235f5b58' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-}
-
-.filter-select::-ms-expand,
-.sort-select::-ms-expand {
-    display: none;
-}
-
-/* Обложка: автор */
-.cover-author {
-    font-size: 0.9rem !important;
-    margin-top: 8px;
-    font-style: italic;
-    opacity: 0.9;
-    word-break: break-word;
-    max-width: 100%;
-    line-height: 1.3;
-}
-
-/* Пагинация внутри сетки книг */
 .books__grid .pagination {
     grid-column: 1 / -1;
     display: flex;
