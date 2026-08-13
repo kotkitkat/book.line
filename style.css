@@ -1182,3 +1182,274 @@ h1, h2, h3, .logo, .btn {
     justify-content: center;
     margin-top: 40px;
 }
+/* ===== МОБИЛЬНАЯ АДАПТИВНОСТЬ ===== */
+
+/* Планшеты и маленькие ноутбуки */
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 20px;
+    }
+    .books__grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+    .book-card__cover {
+        flex: 0 0 150px;
+    }
+}
+
+/* Телефоны (ширина до 768px) */
+@media (max-width: 768px) {
+    /* Шапка */
+    .header {
+        padding: 12px 0;
+    }
+    .logo {
+        font-size: 1.4rem;
+        gap: 6px;
+    }
+    .logo i {
+        font-size: 1.5rem;
+    }
+    .nav__list {
+        gap: 20px;
+    }
+    .nav__link {
+        font-size: 0.95rem;
+    }
+
+    /* Секции */
+    .section-title {
+        font-size: 2.2rem;
+    }
+    .section-subtitle {
+        font-size: 1rem;
+    }
+
+    /* Карточки книг */
+    .books__grid {
+        grid-template-columns: 1fr; /* одна колонка */
+        gap: 20px;
+    }
+    .book-card {
+        flex-direction: column; /* обложка сверху, текст снизу */
+        max-width: 100%;
+    }
+    .book-card__cover {
+        flex: 0 0 180px;
+        width: 100%;
+        height: 180px;
+    }
+    .book-card__info {
+        padding: 16px;
+    }
+    .book-card__title {
+        font-size: 1.4rem;
+    }
+    .book-card__author {
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+    }
+    .spoiler-lines {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    .mug-icon {
+        font-size: 1rem;
+    }
+    .book-actions {
+        gap: 12px;
+    }
+    .action-icon {
+        font-size: 1.2rem;
+    }
+
+    /* Поиск и фильтры */
+    .search-panel {
+        padding: 15px;
+    }
+    .filters-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .filter-select {
+        min-width: 100%;
+    }
+    .sort-row {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .sort-select {
+        min-width: 120px;
+        flex: 1;
+    }
+    .btn-filter-fav {
+        padding: 8px 16px;
+    }
+
+    /* Пагинация */
+    .pagination-btn {
+        min-width: 34px;
+        height: 34px;
+        font-size: 0.85rem;
+    }
+
+    /* Полка */
+    .shelf-container {
+        padding: 20px 15px 30px;
+        border-radius: 20px;
+    }
+    .books-shelf {
+        gap: 16px;
+        justify-content: center;
+    }
+    .shelf-book {
+        width: 150px;
+        min-height: 160px;
+        padding: 12px 10px;
+        border-left-width: 6px;
+    }
+    .shelf-book-title {
+        font-size: 0.95rem;
+    }
+    .shelf-book-author {
+        font-size: 0.75rem;
+        margin-bottom: 6px;
+    }
+    .shelf-book-snippet {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+    .review-header {
+        font-size: 0.7rem;
+    }
+
+    /* Модалки */
+    .modal-content {
+        padding: 25px 20px;
+        width: 95%;
+        max-height: 90vh;
+    }
+    .modal-content h2 {
+        font-size: 1.5rem;
+    }
+    .form-control {
+        font-size: 0.95rem;
+        padding: 10px 14px;
+    }
+    .btn {
+        padding: 10px 24px;
+        font-size: 0.95rem;
+    }
+
+    /* Форма добавления */
+    .add-book__form {
+        padding: 25px 18px;
+    }
+    .add-book__form .form-group {
+        margin-bottom: 18px;
+    }
+
+    /* Футер */
+    .footer__inner {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+    .footer__social {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .footer__yandex {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+    }
+    .btn--yandex {
+        font-size: 0.8rem;
+        padding: 4px 12px;
+        height: 30px;
+    }
+    .footer__copy {
+        font-size: 0.8rem;
+        text-align: center;
+    }
+
+    /* Бургер-меню должно быть видимо только на мобильных */
+    .burger {
+        display: flex;
+    }
+    .nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        border-top: 1px solid var(--border);
+        padding: 20px;
+    }
+    .nav.active {
+        display: block;
+    }
+    .nav__list {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+    .nav__link {
+        font-size: 1.1rem;
+    }
+}
+
+/* Очень маленькие телефоны (до 480px) */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 12px;
+    }
+    .section-title {
+        font-size: 1.8rem;
+    }
+    .section-subtitle {
+        font-size: 0.9rem;
+    }
+    .book-card__cover {
+        flex: 0 0 140px;
+        height: 140px;
+    }
+    .book-card__title {
+        font-size: 1.2rem;
+    }
+    .spoiler-lines {
+        font-size: 0.8rem;
+        padding: 10px;
+    }
+    .mug-icon {
+        font-size: 0.9rem;
+    }
+    .shelf-book {
+        width: 120px;
+        min-height: 130px;
+        padding: 10px 8px;
+    }
+    .shelf-book-title {
+        font-size: 0.8rem;
+    }
+    .shelf-book-author {
+        font-size: 0.65rem;
+    }
+    .shelf-book-snippet {
+        font-size: 0.6rem;
+        padding: 4px 6px;
+    }
+    .btn {
+        padding: 8px 18px;
+        font-size: 0.85rem;
+    }
+    .modal-content {
+        padding: 20px 16px;
+    }
+}
